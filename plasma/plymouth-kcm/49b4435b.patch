@@ -1,0 +1,48 @@
+From 49b4435b0c11265a6143da269a5852da24381fbf Mon Sep 17 00:00:00 2001
+From: Antonio Rojas <arojas@archlinux.org>
+Date: Fri, 24 Mar 2023 01:05:29 +0000
+Subject: [PATCH] Only run update-initramfs if it exists, and run mkinitcpio on
+ Arch instead
+
+update-initramfs is Debian/Ubuntu specific
+---
+ src/helper.cpp | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
+
+diff --git a/src/helper.cpp b/src/helper.cpp
+index b594d59..e642332 100644
+--- a/src/helper.cpp
++++ b/src/helper.cpp
+@@ -154,12 +154,23 @@ ActionReply PlymouthHelper::save(const QVariantMap &args)
+     }
+ 
+     QProcess process;
+-    qDebug() << "Running update-initramfs -u  now";
+-    process.start(QStringLiteral("/usr/sbin/update-initramfs"), QStringList() << QStringLiteral("-u"));
+-    if (!process.waitForStarted()) {
+-        reply = ActionReply::BackendError;
+-        reply.setErrorDescription(i18n("Cannot start initramfs."));
+-        return reply;
++    if (QFileInfo::exists(QStringLiteral("/usr/sbin/update-initramfs"))) {
++        qDebug() << "Running update-initramfs -u now";
++        process.start(QStringLiteral("/usr/sbin/update-initramfs"), QStringList() << QStringLiteral("-u"));
++        if (!process.waitForStarted()) {
++            reply = ActionReply::BackendError;
++            reply.setErrorDescription(i18n("Cannot start initramfs."));
++            return reply;
++        }
++    }
++    if (QFileInfo::exists(QStringLiteral("/usr/bin/mkinitcpio"))) {
++        qDebug() << "Running mkinitcpio -P now";
++        process.start(QStringLiteral("/usr/bin/mkinitcpio"), QStringList() << QStringLiteral("-P"));
++        if (!process.waitForStarted()) {
++            reply = ActionReply::BackendError;
++            reply.setErrorDescription(i18n("Cannot start mkinitcpio."));
++            return reply;
++        }
+     }
+     // We don't know how long this will take. The helper will need to generate N=installed_kernels initrds.
+     // Be very generous with the timeout! https://bugs.kde.org/show_bug.cgi?id=400641
+-- 
+GitLab
+

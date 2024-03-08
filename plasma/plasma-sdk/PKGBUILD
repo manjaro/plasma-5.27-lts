@@ -1,0 +1,37 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=plasma-sdk
+pkgver=5.27.11
+_dirver=$(echo $pkgver | cut -d. -f1-3)
+pkgrel=1
+pkgdesc='Applications useful for Plasma development'
+arch=(x86_64)
+url='https://kde.org/plasma-desktop/'
+license=(LGPL)
+depends=(plasma-framework5 perl)
+makedepends=(extra-cmake-modules kdoctools5 ktexteditor5)
+groups=(plasma)
+source=(https://download.kde.org/stable/plasma/$_dirver/$pkgname-$pkgver.tar.xz{,.sig}
+        https://invent.kde.org/plasma/plasma-sdk/-/commit/657b0e8976ee698f8d0f2dc6e5b12156db176b1e.patch)
+sha256sums=('723620cdbe45d064ab4cceb815de40fe5ea99fb195cb38136547a943469eb51f'
+            'SKIP'
+            '57cad4c0deeca0c1e90118750eebf26f0600f4dbbb64e3f824985e8c55ebe6c9')
+validpgpkeys=('E0A3EB202F8E57528E13E72FD7574483BB57B18D'  # Jonathan Esk-Riddell <jr@jriddell.org>
+              '0AAC775BB6437A8D9AF7A3ACFE0784117FBCE11D'  # Bhushan Shah <bshah@kde.org>
+              'D07BD8662C56CB291B316EB2F5675605C74E02CF'  # David Edmundson <davidedmundson@kde.org>
+              '1FA881591C26B276D7A5518EEAAF29B42A678C20') # Marco Martin <notmart@gmail.com>
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 -i ../657b0e8976ee698f8d0f2dc6e5b12156db176b1e.patch
+}
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}
