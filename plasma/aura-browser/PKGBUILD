@@ -3,7 +3,7 @@
 pkgname=aura-browser
 pkgver=5.27.11
 _dirver=$(echo $pkgver | cut -d. -f1-3)
-pkgrel=1
+pkgrel=2
 pkgdesc='Browser for a fully immersed Big Screen experience allowing you to navigate the world wide web using just your remote control'
 arch=(x86_64)
 url='https://plasma-bigscreen.org/'

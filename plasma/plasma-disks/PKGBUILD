@@ -3,7 +3,7 @@
 pkgname=plasma-disks
 pkgver=5.27.11
 _dirver=$(echo $pkgver | cut -d. -f1-3)
-pkgrel=1
+pkgrel=2
 pkgdesc='Monitors S.M.A.R.T. capable devices for imminent failure'
 arch=(x86_64)
 url='https://kde.org/plasma-desktop/'
